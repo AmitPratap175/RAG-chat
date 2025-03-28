@@ -1,13 +1,14 @@
 from langgraph.graph import StateGraph, END
 from typing import TypedDict, Annotated, Sequence
-from services.sentiment import SentimentAnalyzer  # Assume you have this
+# from services.sentiment import SentimentAnalyzer  # Assume you have this
 from controllers.qa_handler import QAHandler  # Your existing QA handler
 from services.google_ai import GoogleAI
 import operator
+from langchain.prompts import ChatPromptTemplate
 
 class BotState(TypedDict):
     user_input: str
-    sentiment: Annotated[str, "negative|neutral|positive"]
+    sentiment: Annotated[str, "negative|positive"]
     qa_answer: str
     needs_human: bool
     response: str
@@ -16,7 +17,6 @@ class CustomerSupportBot:
     def __init__(self):
         self.llm = GoogleAI().get_llm()
         self.qa_handler = QAHandler()
-        self.sentiment_analyzer = SentimentAnalyzer()
         self.workflow = StateGraph(BotState)
         self.retriever = None
         
@@ -44,11 +44,33 @@ class CustomerSupportBot:
 
         # Compile the graph
         self.app = self.workflow.compile()
+    
+    def sentiment_analyzer(self, text: str) -> str:
+        """Analyze sentiment of the text"""
+        prompt = ChatPromptTemplate.from_template(
+            """
+        You are a customer support chatbot. Analyze the sentiment of the following customer query. 
+        Ignore any previous chat history. Focus solely on the current query.
+        Consider the context of customer support interactions when determining the sentiment.
+
+        Respond with one of the following exactly: 'positive', or 'negative'.
+
+        Here are some guidelines:
+
+        - 'positive': The customer expresses satisfaction, appreciation, or positive feelings.The customer's query is informational, factual, or lacks strong emotional expression, and the chatbot can potentially provide a resolution.
+            If the customer uses inappropriate language, but the query can still be answered by the bot, respond with neutral.
+        - 'negative': The customer explicitly requests to speak to a human, or the customer's query indicates that the chatbot is unable to provide a satisfactory answer and requires human intervention.
+
+        Query: {query}
+        """
+        )
+        chain = prompt | self.llm
+        sentiment = chain.invoke({"query": text}).content
+        return sentiment
 
     def analyze_sentiment(self, state: BotState) -> dict:
         """Analyze user input sentiment"""
-        sentiment = self.sentiment_analyzer.analyze(state["user_input"])
-        print(f"Detected sentiment: {sentiment}")
+        sentiment = self.sentiment_analyzer(state["user_input"])
         return {"sentiment": sentiment}
 
     def decide_routing(self, state: BotState) -> str:

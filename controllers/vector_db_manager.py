@@ -16,6 +16,7 @@ class VectorDBManager:
 
     def get_retriever(self):
         if os.path.exists(Config.PERSIST_DIR):
+            # print("*"*50,f"Config.PERSIST_DIR: {Config.PERSIST_DIR}","*"*50)
             return Chroma(
                 persist_directory=Config.PERSIST_DIR,
                 embedding_function=self.embeddings

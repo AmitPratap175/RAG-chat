@@ -60,8 +60,9 @@ class UIController:
             query = st.text_input("Enter your question:")
             if st.button("🚀 Get Answer"):
                 retriever = self.db_manager.get_retriever()
+                # print("*"*50,f"Retriever: {retriever}","*"*50)
                 response = self.qa_handler.handle_query(query, retriever)
-                print(f"\n\n\nResponse: {response}\n\n\n")
+                # print(f"\n\n\nResponse: {response}\n\n\n")
                 final_response = response['result'] if isinstance(response, dict) and 'result' in response else response
                 st.markdown(final_response)
         else:
