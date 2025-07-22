@@ -43,6 +43,7 @@ class UIController:
         # thread_config = {"configurable": {"thread_id": user_uuid}}
         # final_text = ""
         try:
+            # self.db_manager.create_db()
             retriever = self.db_manager.get_retriever()
             response = self.qa_handler.handle_query(data, retriever)
             final_response = response['result'] if isinstance(response, dict) and 'result' in response else response

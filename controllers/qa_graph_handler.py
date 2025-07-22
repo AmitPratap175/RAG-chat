@@ -66,6 +66,7 @@ class CustomerSupportBot:
         )
         chain = prompt | self.llm
         sentiment = chain.invoke({"query": text}).content
+        print(f"Sentiment analyzed: {sentiment}")
         return sentiment
 
     def analyze_sentiment(self, state: BotState) -> dict:
@@ -76,6 +77,7 @@ class CustomerSupportBot:
     def decide_routing(self, state: BotState) -> str:
         """Route based on sentiment"""
         if state["sentiment"] == "negative":
+            print("Routing to human escalation due to negative sentiment.")
             return "escalate"
         return "answer"
 
