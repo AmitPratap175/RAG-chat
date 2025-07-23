@@ -9,13 +9,6 @@ const root = ReactDOM.createRoot(
 
 const TemplateWebsite: React.FC = () => (
   <div>
-    <header>
-      <h1>Welcome to Our Website</h1>
-    </header>
-    <main>
-      <p>This is a template website with some content.</p>
-      <p>Feel free to explore and interact with the customer support chat.</p>
-    </main>
     <App />
   </div>
 );
