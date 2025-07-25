@@ -66,7 +66,7 @@ class UIController:
         """
         if not os.path.exists(Config.PERSIST_DIR):
             self.db_created = False
-            self._create_new_database(Config.PDF_DIR)
+            self._create_new_database(Config.DATA_DIR)
         else:
             self.db_created = True
 

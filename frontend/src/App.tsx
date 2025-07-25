@@ -14,7 +14,7 @@ const App: React.FC = () => {
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-  const { response, isOpen, sendMessage } = useWebSocket(`${wsProtocol}${window.location.hostname}:8000/ws`, setShowEE);
+  const { response, isOpen, sendMessage } = useWebSocket(`${wsProtocol}${window.location.host}/ws`, setShowEE);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
